@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios');
 
 
 const doesExist = (username) => {
@@ -37,11 +38,20 @@ public_users.post("/register", (req,res) => {
 });
 
 
-// Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books,null,4));
-  //return res.status(300).json({message: "Yet to be implemented"});
+const booksPromise = new Promise((resolve, reject) => {
+    resolve(JSON.stringify(books,null,4));  
+  });
+  
+public_users.get('/', function (req, res) {
+    booksPromise.then((booksString) => {
+                        res.send(booksString); })
+                .catch((err) => {
+                        console.error(err);
+                        res.status(500).send({ message: 'An error occurred while fetching the books' });
+                });
 });
+
+
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
