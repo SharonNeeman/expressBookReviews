@@ -117,7 +117,26 @@ public_users.get('/author/:author',function (req, res) {
 
 });
 */
+// Get all books based on title
+public_users.get('/title/:title',function (req, res) {
+    let filteredBooks = {};
+    const title = req.params.title;
+    const booksPromise = new Promise((resolve, reject) => {
+        const bookKey=Object.keys(books)
+        bookKey.forEach(key => {
+            if (books[key].title === title) {
+            filteredBooks[key] = books[key];
+            }
+        });
+        if (filteredBooks) 
+        {resolve(filteredBooks);} 
+        else { reject("Book not found for the author");}
+    })
+    booksPromise.then((books)=>res.send(books))
+    .catch( (error)=> res.status(404).send(error))
+});
 
+/*
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
 
@@ -134,6 +153,7 @@ public_users.get('/title/:title',function (req, res) {
     res.send(filteredBooks)
 
 });
+*/
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
