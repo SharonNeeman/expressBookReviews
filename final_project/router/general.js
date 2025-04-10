@@ -3,7 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
-const axios = require('axios');
+
 
 
 const doesExist = (username) => {
@@ -79,6 +79,28 @@ public_users.get('/isbn/:isbn',function (req, res) {
  */
   
 // Get book details based on author
+public_users.get('/author/:author',function (req, res) { 
+    let filteredBooks = {};
+    const author = req.params.author;
+    const booksPromise = new Promise((resolve, reject) => {
+        const bookKey=Object.keys(books)
+        bookKey.forEach(key => {
+        if (books[key].author === author) {
+          filteredBooks[key] = books[key];
+        }
+        if (filteredBooks) {
+            resolve(filteredBooks);
+          } else {
+            reject("Book not found for the author");
+          }
+        });
+    })
+    booksPromise.then((books)=>res.send(books))
+                .catch( (error)=> res.status(404).send(error))
+});
+
+/*
+// Get book details based on author
 public_users.get('/author/:author',function (req, res) {
     
     let filteredBooks = {};
@@ -94,6 +116,7 @@ public_users.get('/author/:author',function (req, res) {
     res.send(filteredBooks)
 
 });
+*/
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
